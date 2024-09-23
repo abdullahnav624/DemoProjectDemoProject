@@ -1,0 +1,148 @@
+import React, {useEffect, useState} from 'react';
+import {View,Text, ScrollView} from 'react-native';
+
+
+const App = () => {
+const[data,setData] = useState();
+const[surah,setSurah] = useState([]);
+
+  const getAPIData = async()=>{
+    const url = "https://api.alquran.cloud/v1/quran/en.asad";
+    let result =await fetch(url);
+    const response = await result.json();
+    setData(response);
+    
+    setSurah(data!["data"]["surahs"]);
+    
+    // <Text style={{fontSize:30}}>{data["data"]["surahs"][1]["name"]}</Text>
+  }
+  useEffect(()=>{
+    getAPIData();
+  },[])
+
+  return (
+    <ScrollView >
+      <Text > Hello</Text>
+      {surah  && surah.map((item)=>
+        <View> 
+          <Text style={{fontSize:30}}>{item["name"]}</Text>
+        </View>
+      )}
+    </ScrollView>
+
+  );
+};
+
+export default App;
+
+
+
+
+
+
+
+// const getMappedAyahs = (jsonAyahs:any):Ayahs[]=>{
+//   var ayahs: Ayahs;
+
+//     return(
+//       jsonAyahs.forEach((element:any) => {
+//     ayahs.number = element["number"]
+//     ayahs.text = element["text"]
+//     ayahs.numberInSurah = element["numberInSurah"]
+//     ayahs.juz = element["juz"]
+//     ayahs.manzil = element["manzil"]
+//     ayahs.page = element["page"]
+//     ayahs.ruku = element["ruku"]
+//     ayahs.hizbQuarter = element["hizbQuarter"]
+//     ayahs.sajda = element["sajda"]
+//      }
+//     ))
+
+// }
+
+// const surahMapper = (jsonSurahs:any)=>{
+// var surahss: Surahs[] = [];
+
+// jsonSurahs.forEach((jsonSurah:any) => {
+// var surah: Surahs ;
+
+//   surah.number= jsonSurah["number"]
+//   console.log(JSON.stringify(jsonSurah["name"]));
+
+//   surah.name = jsonSurah["name"]
+//   surah.englishName = jsonSurah["englishName"]
+//   surah.englishNameTranslation = jsonSurah["englishNameTranslation"]
+//   surah.revelationType = jsonSurah["revelationType"]
+//   surah.ayahs = getMappedAyahs(jsonSurah["ayahs"]);
+// });
+// return surah;
+
+// }
+// const getMappedData = (resposne: Muttaqi)=>{
+
+
+// }
+
+
+
+
+
+const App = () => {
+  const [apiData, setapiData] = useState<Muttaqi>();
+
+  const getApiData = async () => {
+    const url = 'https://api.alquran.cloud/v1/quran/en.asad';
+    let response = await fetch(url);
+    let result = await response.json();
+    const data: Muttaqi = result;
+    setapiData(data);
+  };
+
+  useEffect(() => {
+    getApiData();
+  }, []);
+
+
+  return (
+    <View style={{flex:1,justifyContent: 'center', alignItems: 'center',marginTop:30}}>
+      <Text style={{fontSize: 40}}>{apiData?.data.surahs[1].name}</Text>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <Text style={{fontSize: 40}}>
+          {apiData?.data.surahs[1].englishName}
+        </Text>
+        <Text style={{fontSize: 20}}>
+          ({apiData?.data.surahs[1].englishNameTranslation})
+        </Text>
+      </View>
+      <Text style={{fontSize: 25}}>
+        ({apiData?.data.surahs[1].revelationType})
+      </Text>
+
+      <FlatList
+        data={apiData?.data.surahs[1].ayahs}
+        renderItem={({item}) => (
+          <View style={{alignItems:'center', borderWidth:20,borderColor:'green',borderRadius:30,margin:5}}>
+            
+
+            <Text style={{fontSize: 30, padding: 10}}>{item.text}</Text>
+            <View style={{alignItems:'center',padding:10}}>
+              <Text style={{fontSize: 30,}}>Info:</Text>
+              <View style={{flexDirection:'row',flexWrap:'wrap',justifyContent:'center'}}>
+              <Text style={{paddingLeft:10}}>Ayah number in Surah:{item.numberInSurah}</Text>
+              <Text style={{paddingLeft:10}}>Hizb Quarter:{item.hizbQuarter}</Text>
+              <Text style={{paddingLeft:10}}>Juz:{item.juz}</Text>
+              <Text style={{paddingLeft:10}}>Manzil:{item.manzil}</Text>
+              <Text style={{paddingLeft:10}}>Page no:{item.page}</Text>
+              <Text style={{paddingLeft:10}}>Ruku:{item.ruku}</Text>
+
+              </View>
+            
+            </View>
+          </View>
+        )}
+      />
+    </View>
+  );
+};
+
+export default App;
